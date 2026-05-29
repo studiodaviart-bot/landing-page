@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-    // Navigasi
+    // Navigasi Antar Halaman
     const page1 = document.getElementById('page1');
     const page2 = document.getElementById('page2');
     const nextBtn = document.getElementById('nextBtn');
@@ -21,11 +21,14 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
-// Fungsi Download
+// Fungsi Download dengan Alur 3 Tahap
 function downloadFlow(btn, smartLink, downloadLink) {
-    const originalText = btn.innerText;
+    const originalText = btn.innerText; // Menyimpan teks awal "Download"
+    
+    // 1. Buka iklan (Smartlink) di tab baru
     window.open(smartLink, '_blank');
     
+    // 2. Setup pesan status
     let statusText = btn.parentNode.querySelector('.status-preparing');
     if (!statusText) {
         statusText = document.createElement('p');
@@ -34,10 +37,11 @@ function downloadFlow(btn, smartLink, downloadLink) {
     }
     statusText.innerText = "Your download will start automatically...";
     
+    // 3. Matikan klik sementara & mulai countdown
     btn.style.pointerEvents = 'none';
     btn.style.opacity = '0.7';
     
-    let count = 5;
+    let count = 7;
     btn.innerText = `Preparing... ${count}s`;
     
     const timer = setInterval(() => {
@@ -45,18 +49,28 @@ function downloadFlow(btn, smartLink, downloadLink) {
         if (count > 0) {
             btn.innerText = `Preparing... ${count}s`;
         } else {
+            // 4. Tahap Akhir: Tombol berubah jadi "Get File"
             clearInterval(timer);
-            btn.innerText = "Starting...";
             
-            setTimeout(() => {
+            btn.innerText = "Get File"; // Kata ketiga
+            btn.style.pointerEvents = 'auto'; // Tombol bisa diklik lagi
+            btn.style.opacity = '1';
+            btn.classList.add('ready-to-download'); // Class CSS tambahan untuk styling
+            statusText.innerText = "File is ready!";
+            
+            // 5. Eksekusi download saat diklik manual
+            btn.onclick = function() {
                 window.location.href = downloadLink;
+                
+                // Reset tombol ke semula setelah diklik
                 setTimeout(() => {
                     btn.innerText = originalText;
-                    btn.style.pointerEvents = 'auto';
-                    btn.style.opacity = '1';
-                    statusText.innerText = ""; 
+                    btn.classList.remove('ready-to-download');
+                    statusText.innerText = "";
+                    // Kembalikan fungsi klik agar bisa dipakai lagi
+                    btn.onclick = () => downloadFlow(btn, smartLink, downloadLink);
                 }, 1000);
-            }, 500);
+            };
         }
     }, 1000);
 }

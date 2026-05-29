@@ -128,6 +128,14 @@ body {
     border-color: white; 
 }
 
+/* Tombol berubah warna saat siap diunduh */
+.ready-to-download {
+    background-color: #28a745 !important;
+    border-color: #28a745 !important;
+    transform: scale(1.05);
+    transition: all 0.3s ease;
+}
+
 .page { display: none; } 
 .page.active { display: block; }
 
