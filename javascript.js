@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
+    // Navigasi
     const page1 = document.getElementById('page1');
     const page2 = document.getElementById('page2');
     const nextBtn = document.getElementById('nextBtn');
@@ -20,11 +21,42 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
-function downloadFlow(smartLink, downloadLink) {
+// Fungsi Download
+function downloadFlow(btn, smartLink, downloadLink) {
+    const originalText = btn.innerText;
     window.open(smartLink, '_blank');
-    setTimeout(() => {
-        const link = document.createElement('a');
-        link.href = downloadLink;
-        link.click();
-    }, 5000);
+    
+    let statusText = btn.parentNode.querySelector('.status-preparing');
+    if (!statusText) {
+        statusText = document.createElement('p');
+        statusText.className = 'status-preparing';
+        btn.parentNode.appendChild(statusText);
+    }
+    statusText.innerText = "Your download will start automatically...";
+    
+    btn.style.pointerEvents = 'none';
+    btn.style.opacity = '0.7';
+    
+    let count = 5;
+    btn.innerText = `Preparing... ${count}s`;
+    
+    const timer = setInterval(() => {
+        count--;
+        if (count > 0) {
+            btn.innerText = `Preparing... ${count}s`;
+        } else {
+            clearInterval(timer);
+            btn.innerText = "Starting...";
+            
+            setTimeout(() => {
+                window.location.href = downloadLink;
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                    btn.style.pointerEvents = 'auto';
+                    btn.style.opacity = '1';
+                    statusText.innerText = ""; 
+                }, 1000);
+            }, 500);
+        }
+    }, 1000);
 }
